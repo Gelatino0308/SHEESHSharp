@@ -1,13 +1,13 @@
 Type: 10, Category: INVALID, Value: bounce_#, Line: 1, Column: 1
 Type: 1, Category: IDENTIFIER, Value: love, Line: 1, Column: 3
-Type: 9, Category: BRACKET, Value: (, Line: 1, Column: 5
+Type: 9, Category: BRACKET, Value: (, Line: 1, Column: 5
 Type: 0, Category: NUM, Value: 1, Line: 1, Column: 6
-Type: 9, Category: BRACKET, Value: ), Line: 1, Column: 7
-Type: 8, Category: DELIMITER, Value: ;, Line: 1, Column: 8
+Type: 9, Category: BRACKET, Value: ), Line: 1, Column: 7
+Type: 8, Category: DELIMITER, Value: ;, Line: 1, Column: 8
 Type: 2, Category: KEYWORD, Value: if, Line: 2, Column: 1
 Type: 1, Category: IDENTIFIER, Value: you, Line: 2, Column: 3
 Type: 1, Category: IDENTIFIER, Value: are, Line: 2, Column: 5
-Type: 8, Category: DELIMITER, Value: ;êeÕÍ, Line: 2, Column: 6
+Type: 8, Category: DELIMITER, Value: ;, Line: 2, Column: 6
 Type: 2, Category: KEYWORD, Value: if, Line: 3, Column: 1
 Type: 1, Category: IDENTIFIER, Value: exit, Line: 4, Column: 1
 Type: 1, Category: IDENTIFIER, Value: while, Line: 5, Column: 1

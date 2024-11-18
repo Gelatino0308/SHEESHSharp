@@ -294,7 +294,7 @@ void lexer(FILE *file) {
 
 int check_filename(int arg_count, char *filename) {
     if (arg_count < 2) { // Checks if argument count is incomplete
-        printf("Usage: %s <filename>\n");
+        printf("Usage: <filename>\n");
         exit(1);
     }
 
