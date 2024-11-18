@@ -77,29 +77,29 @@ void handle_mlc(FILE *file, int *l, int *c) {
 }
 
 // Function to check if character is a NUM and assigns NUM as the value of the token if yes
-Token *generate_number(char current, FILE *file) { // get number together (not read individually)
-    Token *token = malloc(sizeof(Token));
-    token->type = NUM;
-    token->token_type = "NUM";
-    char *value = malloc(sizeof(char) * 8);
-    int value_index = 0;
+// Token *generate_number(char current, FILE *file) { // get number together (not read individually)
+//     Token *token = malloc(sizeof(Token));
+//     token->type = NUM;
+//     token->token_type = "NUM";
+//     char *value = malloc(sizeof(char) * 8);
+//     int value_index = 0;
 
-    while (isdigit(current) && current != EOF) {
-        value[value_index] = current;
-        value_index++;
-        current = fgetc(file);
-    }
+//     while (isdigit(current) && current != EOF) {
+//         value[value_index] = current;
+//         value_index++;
+//         current = fgetc(file);
+//     }
 
-    value[value_index] = '\0'; // Null terminate the string
-    token->value = value;
+//     value[value_index] = '\0'; // Null terminate the string
+//     token->value = value;
 
-    // Push the last non-digit character back onto the stream <- so that parentheses will not be eaten
-    if (current != EOF) {
-        ungetc(current, file);
-    }
+//     // Push the last non-digit character back onto the stream <- so that parentheses will not be eaten
+//     if (current != EOF) {
+//         ungetc(current, file);
+//     }
     
-    return(token);
-}
+//     return(token);
+// }
 
 // Function to check if the character is a bracket
 int check_bracket(const char *token) {
@@ -146,7 +146,7 @@ int check_operator(const char *token) {
 }
 
 // Checks if character is a bracket/delimiter and assigns it as value of the token if either
-Token *generate_separator(char current) {
+Token *generate_single_token(char current) {
     Token *token = malloc(sizeof(Token));
     char lexeme[2];
     lexeme[0] = current;
@@ -377,7 +377,7 @@ void lexer(FILE *file) {
         
         Token *token = NULL;
 
-        token = generate_separator(current_char);
+        token = generate_single_token(current_char);
         if (token != NULL) {
             token->l = line;
             token->c = column;
