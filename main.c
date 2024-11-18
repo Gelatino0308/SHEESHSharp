@@ -251,7 +251,9 @@ Token *generate_token(char current, FILE *file) {
         token->value = strdup(lexeme);
         token->token_type = "IDENTIFIER";
     } else {
-        return 0;
+        token->type = INVALID;
+        token->value = strdup(lexeme);
+        token->token_type = "INVALID";
     }
 
     // Para hindi makain 'yung parentheses
@@ -319,7 +321,7 @@ void lexer(FILE *file) {
             continue;
         }
 
-        // For invalid characters (mga hindi pumasok sa previous if statements haha)
+        // Handle invalid characters
         token = malloc(sizeof(Token));
         token->type = INVALID;
         token->token_type = "INVALID";
