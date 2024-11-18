@@ -131,6 +131,20 @@ int check_delimiter(const char *token) {
     return 0;
 }
 
+int check_operator(const char *token) {
+    const char *operators[] = {
+        "+", "-", "*", "/", "%"
+    };
+
+    for (int i = 0; i < (sizeof(operators) / sizeof(operators[0])); i++) {
+        if (strcmp(token, operators[i]) == 0) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 // Checks if character is a bracket/delimiter and assigns it as value of the token if either
 Token *generate_separator(char current) {
     Token *token = malloc(sizeof(Token));
@@ -146,6 +160,10 @@ Token *generate_separator(char current) {
         token->type = DELIMITER;
         token->value = strdup(lexeme);
         token->token_type = "DELIMITER";
+    } else if (check_operator(lexeme)) {
+        token->type = OPERATOR;
+        token->value = strdup(lexeme);
+        token->token_type = "OPERATOR";
     } else {
         free(token);
         return NULL;
@@ -291,6 +309,25 @@ Token *generate_token(char current, FILE *file) {
     return token;
 }
 
+
+// Token *generate_operator(char current) {
+//     Token *token = malloc(sizeof(Token));
+//     char lexeme[2];
+//     lexeme[0] = current;
+//     lexeme[1] = '\0';
+
+//     if (check_operator(lexeme)) {
+//         token->type = OPERATOR;
+//         token->value = strdup(lexeme);
+//         token->token_type = "OPERATOR";
+//     } else {
+//         free(token);
+//         return NULL;
+//     }
+
+//     return token;
+// } 
+
 void generate_symbol_table(const Token *tokens, int token_count) {
     FILE *symbol_table = fopen("symbol_table.txt", "w");
     if (!symbol_table) {
@@ -360,6 +397,16 @@ void lexer(FILE *file) {
             column += strlen(token->value);
             continue;
         }
+
+        // if (is_sc(current_char)) {
+        //     token = generate_operator(current_char);
+        //     token->l = line;
+        //     token->c = column;
+        //     tokens[token_count++] = *token;
+        //     free(token);
+        //     column ++;
+        //     continue;
+        // }
 
         // Para sa mga hindi pumapasok sa if (so invalid)
         token = malloc(sizeof(Token));
