@@ -44,6 +44,12 @@ int check_extension(const char* filename, const char *file_ext) {
     return name_end && strcmp(ext, file_ext) == 0;
 }
 
+// Function to check if character is a special character
+int is_sc(char current) {
+    return !isalnum(current) && !isspace(current);
+}
+
+// Function to check if character is a NUM and assigns NUM as the value of the token if yes
 Token *generate_number(char current, FILE *file) { // get number together (not read individually)
     Token *token = malloc(sizeof(Token));
     token->type = NUM;
@@ -68,6 +74,7 @@ Token *generate_number(char current, FILE *file) { // get number together (not r
     return(token);
 }
 
+// Function to check if the character is a bracket
 int check_bracket(const char *token) {
     const char *brackets[] = {
         "[", "]", "{", "}", "(", ")"
@@ -82,6 +89,7 @@ int check_bracket(const char *token) {
     return 0;
 }
 
+// Function to check if character is a delimiter
 int check_delimiter(const char *token) {
     const char *delimiters[] = {
         ";", ","
@@ -96,11 +104,12 @@ int check_delimiter(const char *token) {
     return 0;
 }
 
+// Checks if character is a bracket/delimiter and assigns it as value of the token if either
 Token *generate_separator(char current) {
     Token *token = malloc(sizeof(Token));
     char lexeme[2];
     lexeme[0] = current;
-    lexeme[1] = '\0';\
+    lexeme[1] = '\0';
 
     if (check_bracket(lexeme)) {
         token->type = BRACKET;
@@ -115,14 +124,10 @@ Token *generate_separator(char current) {
         return NULL;
     }
 
-    // Push the last non-digit character back onto the stream
-    // if (current != EOF) {
-    //     ungetc(current, file);
-    // }
-
     return token;
 } 
 
+// Checks if token is a keyword
 int check_keyword(const char *token) {
     const char *keywords[] = {
         "bounce", "car", "do", "drift", "empty", "ex", "flip", "frozen", "group", "if", "input", "jump",
@@ -139,6 +144,7 @@ int check_keyword(const char *token) {
     return 0;
 }
 
+// Checks if token is a reserve word
 int check_rw(const char *token) {
     const char *rws[] = {
         "always", "cap", "cont", "nocap", "toptier"
@@ -153,11 +159,13 @@ int check_rw(const char *token) {
     return 0;
 }
 
+// Checks if token is a identifier
 int check_identifier(const char *token) {
     int i = 0;
     char current = token[i];
     int state = 1;
 
+    // FSM for identifiers
     while (current != '\0') {
         switch(state) {
             case 1: // Q1
@@ -193,59 +201,44 @@ int check_identifier(const char *token) {
     }
 
     return state == 3;
-    // // Identifiers must start with an English alphabet capital or lowercase letters, underscore, or sharp, but not with digits
-    // if (!(isalpha(token[0]) || token[0] == '_' || token[0] == '#')) {
-    //     printf("Identifier does not start with alphabet or _ or #!");
-    //     return 0;
-    // }
-
-    // // Identifiers can include English alphabet capital and lowercase letters, digits.
-    // // Identifiers cannot include special characters except only underscore (_) and sharp (#) characters.
-    // for (int i = 1; token[i] != '\0'; i++) {
-    //     if (!(isalnum(token[i])) || token[i] == '_' || token[i] == '#') {
-    //         printf("Includes special characters other than underscore/sharp!");
-    //         return 0;
-    //     }
-    // }
-
-    // // If an identifier has an underscore (_) or sharp (#) characters, it must follow a single or multiple English alphabet capital or lowercase letters, or digits to be considered a valid identifier.
-    // for (int i = 0; token[i] != '\0'; i++) {
-    //     if ((token[i] == '_' || token[i] == '#') && !isalnum(token[i+1])) {
-    //         printf("Special character is not followed by alnum!");
-    //         return 0;
-    //     }
-    // }
-
-    // // Spaces are not allowed in an identifier.
-    // if (strchr(token, ' ') != NULL) {
-    //     printf("There's a whitespace!");
-    //     return 0;
-    // }
-
-
-    // // Keywords and reserved keywords of the language cannot be used as identifiers.
-    // if (check_keyword(token) || check_rw(token)) {
-    //     printf("It's a reserve word/token!");
-    //     return 0;
-    // }
-
-    // return 1;
 }
 
+// Checks which kind of token the token is (for identifier, keyword, or reserve word)
 Token *generate_token(char current, FILE *file) {
     Token *token = malloc(sizeof(Token));
     char *lexeme = malloc(sizeof(char) * 32);
     int lexeme_index = 0;
+    int has_digit = 0;
+    int has_alpha = 0;
+    int has_sc = 0;
 
     while ((isalnum(current) || current == '_' || current == '#') && current != EOF) {
         lexeme[lexeme_index] = current;
         lexeme_index++;
+
+        if (isdigit(current)) {
+            has_digit = 1;
+        }
+
+        if (isalpha(current)) {
+            has_alpha = 1;
+        }
+
+        if (is_sc(current)) {
+            has_sc = 1;
+        }
+
         current = fgetc(file);
     }
 
     lexeme[lexeme_index] = '\0'; // Null terminate the string
 
-    if (check_keyword(lexeme)) {
+    // If walang following alphabet or special character 'yung digit, it's simply a NUM.
+    if (has_digit && !has_alpha && !has_sc) {
+        token->type = NUM;
+        token->value = strdup(lexeme);
+        token->token_type = "NUM";
+    } else if (check_keyword(lexeme)) {
         token->type = KEYWORD;
         token->value = strdup(lexeme);
         token->token_type = "KEYWORD";
@@ -258,12 +251,10 @@ Token *generate_token(char current, FILE *file) {
         token->value = strdup(lexeme);
         token->token_type = "IDENTIFIER";
     } else {
-        token->type = INVALID;
-        token->value = strdup(lexeme);
-        token->token_type = "INVALID";
+        return 0;
     }
 
-    // Push the last non-digit character back onto the stream
+    // Para hindi makain 'yung parentheses
     if (current != EOF) {
         ungetc(current, file);
     }
@@ -272,27 +263,29 @@ Token *generate_token(char current, FILE *file) {
 }
 
 void generate_symbol_table(const Token *tokens, int token_count) {
-    FILE *out = fopen("symbol_table.txt", "w");
-    if (!out) {
-        fprintf(stderr, "Error: Could not create symbol table.\n");
+    FILE *symbol_table = fopen("symbol_table.txt", "w");
+    if (!symbol_table) {
+        printf("Error: Could not create symbol table.");
         return;
     }
 
     for (int i = 0; i < token_count; i++) {
-        fprintf(out, "Type: %d, Category: %s, Value: %s, Line: %d, Column: %d\n",
-            tokens[i].type, tokens[i].token_type, tokens[i].value, tokens[i].l, tokens[i].c);
+        fprintf(symbol_table, "Type: %d, Category: %s, Value: %s, Line: %d, Column: %d\n",
+        tokens[i].type, tokens[i].token_type, tokens[i].value, tokens[i].l, tokens[i].c);
     }
 
-    fclose(out);
+    fclose(symbol_table);
 }
 
+// Lexer function
 void lexer(FILE *file) {
     char current_char;
     int line = 1, column = 1;
     Token tokens[1000];
     int token_count = 0;
 
-    while ((current_char = fgetc(file)) != EOF) { // Checks each character (note: put this in separate function)
+    // Checks each character in file
+    while ((current_char = fgetc(file)) != EOF) {
         if (isspace(current_char)) {
             if (current_char == '\n') {
                 line++;
@@ -304,8 +297,6 @@ void lexer(FILE *file) {
         }
 
         Token *token = NULL;
-        // token.l = line;
-        // token.c = column;
 
         token = generate_separator(current_char);
         if (token != NULL) {
@@ -317,20 +308,8 @@ void lexer(FILE *file) {
             continue;
         }
 
-        // if (current_char == ';') {
-        //     token.type = DELIMITER;
-        //     token.token_type = "DELIMITER";
-        //     token.value = strdup(&current_char);
-        // } else if (current_char == '(') {
-        //     token.type = BRACKET;
-        //     token.token_type = "BRACKET";
-        //     token.value = strdup(&current_char);
-        // } else if (current_char == ')') {
-        //     token.type = BRACKET;
-        //     token.token_type = "BRACKET";
-        //     token.value = strdup(&current_char);
-        // } else 
-        if (isalpha(current_char) || current_char == '_' || current_char == '#') {
+        // Checks if keyword/identifier/num/reserve word
+        if (isalnum(current_char) || current_char == '_' || current_char == '#') {
             token = generate_token(current_char, file);
             token->l = line;
             token->c = column;
@@ -338,31 +317,9 @@ void lexer(FILE *file) {
             free(token);
             column += strlen(token->value);
             continue;
-            // token.type = test_token->type;
-            // token.token_type = strdup(test_token->token_type);
-            // token.value = strdup(test_token->value);
-            // Token *test_token = generate_token(current_char, file);
-            // printf("TEST %s VALUE: %s\n", test_token->token_type, test_token->value);
-            // free(test_token->value);
-            // free(test_token);
-        } 
-        
-        if (isdigit(current_char)) {
-            token = generate_number(current_char, file);
-            token->l = line;
-            token->c = column;
-            tokens[token_count++] = *token;
-            free(token);
-            column += strlen(token->value);
-            continue;
-            // Token *test_token = generate_number(current_char, file);
-            // token.type = test_token->type;
-            // token.token_type = strdup(test_token->token_type);
-            // token.value = strdup(test_token->value);
-            // free(test_token->value);
-            // free(test_token);
-        } 
+        }
 
+        // Handle invalid characters
         token = malloc(sizeof(Token));
         token->type = INVALID;
         token->token_type = "INVALID";
@@ -373,17 +330,6 @@ void lexer(FILE *file) {
         token->c = column;
         tokens[token_count++] = *token;
         free(token);
-        column++;
-            
-            // token.token_type = "INVALID";
-            // token.type = INVALID;
-            // char *invalid = malloc(2);
-            // invalid[0] = current_char;
-            // token.value = invalid;
-
-            // tokens[token_count++] = token;=
-        
-        // tokens[token_count++] = token;
         column++;
     }
 
