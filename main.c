@@ -321,7 +321,7 @@ void lexer(FILE *file) {
             continue;
         }
 
-        // Handle invalid characters
+        // Para sa mga hindi pumapasok sa if (so invalid)
         token = malloc(sizeof(Token));
         token->type = INVALID;
         token->token_type = "INVALID";
