@@ -15,6 +15,7 @@ typedef enum {
     DELIMITER,
     BRACKET,
     INVALID,
+    DRIFT
 } TokenType;
 
 typedef struct {
@@ -256,8 +257,9 @@ Token *generate_token(char current, FILE *file) {
     int has_digit = 0;
     int has_alpha = 0;
     int has_sc = 0;
+    int has_decimal_point = 0;
 
-    while ((isalnum(current) || current == '_' || current == '#') && current != EOF) {
+    while ((isalnum(current) || current == '_' || current == '#' || current == '.') && current != EOF) {
         lexeme[lexeme_index] = current;
         lexeme_index++;
 
@@ -273,13 +275,29 @@ Token *generate_token(char current, FILE *file) {
             has_sc = 1;
         }
 
+        if (current == '.') {
+            if (has_decimal_point) {
+                // Para di sumobra decimal point
+                // lexeme[lexeme_index - 1];
+                printf("%s", lexeme);
+                break;
+            }
+            has_decimal_point = 1;
+        } else {
+            has_digit = 1;
+        }
+
         current = fgetc(file);
     }
 
     lexeme[lexeme_index] = '\0'; // Null terminate the string
 
     // If walang following alphabet or special character 'yung digit, it's simply a NUM.
-    if (has_digit && !has_alpha && !has_sc) {
+    if (has_digit && has_decimal_point && !has_alpha) {
+        token->type = DRIFT;
+        token->value = strdup(lexeme);
+        token->token_type = "DRIFT";
+    } else if (has_digit && !has_alpha && !has_sc) {
         token->type = NUM;
         token->value = strdup(lexeme);
         token->token_type = "NUM";
