@@ -52,9 +52,6 @@ Token *generate_number(char current, FILE *file) { // get number together (not r
     int value_index = 0;
 
     while (isdigit(current) && current != EOF) {
-        // if(!isdigit(current)) {
-        //     break;
-        // }
         value[value_index] = current;
         value_index++;
         current = fgetc(file);
@@ -62,7 +59,6 @@ Token *generate_number(char current, FILE *file) { // get number together (not r
 
     value[value_index] = '\0'; // Null terminate the string
     token->value = value;
-    // printf("%s\n, token->value");
 
     // Push the last non-digit character back onto the stream <- so that parentheses will not be eaten
     if (current != EOF) {
@@ -220,7 +216,7 @@ Token *generate_token(char current, FILE *file) {
     return token;
 }
 
-void write_symbol_table(const Token *tokens, int token_count) {
+void generate_symbol_table(const Token *tokens, int token_count) {
     FILE *out = fopen("symbol_table.txt", "w");
     if (!out) {
         fprintf(stderr, "Error: Could not create symbol table.\n");
@@ -268,7 +264,7 @@ void lexer(FILE *file) {
             token.type = BRACKET;
             token.token_type = "BRACKET";
             token.value = strdup(&current_char);
-        } else if (isalnum(current_char)) {
+        } else if (isalpha(current_char) || current_char == '_' || current_char == '#') {
             Token *test_token = generate_token(current_char, file);
             token.type = test_token->type;
             token.token_type = strdup(test_token->token_type);
@@ -293,8 +289,7 @@ void lexer(FILE *file) {
         column++;
     }
 
-    write_symbol_table(tokens, token_count);
-
+    generate_symbol_table(tokens, token_count);
 }
 
 int check_filename(int arg_count, char *filename) {
