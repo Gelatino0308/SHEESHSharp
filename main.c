@@ -68,6 +68,61 @@ Token *generate_number(char current, FILE *file) { // get number together (not r
     return(token);
 }
 
+int check_bracket(const char *token) {
+    const char *brackets[] = {
+        "[", "]", "{", "}", "(", ")"
+    };
+
+    for (int i = 0; i < (sizeof(brackets) / sizeof(brackets[0])); i++) {
+        if (strcmp(token, brackets[i]) == 0) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+int check_delimiter(const char *token) {
+    const char *delimiters[] = {
+        ";", ","
+    };
+
+    for (int i = 0; i < (sizeof(delimiters) / sizeof(delimiters[0])); i++) {
+        if (strcmp(token, delimiters[i]) == 0) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+Token *generate_separator(char current) {
+    Token *token = malloc(sizeof(Token));
+    char lexeme[2];
+    lexeme[0] = current;
+    lexeme[1] = '\0';\
+
+    if (check_bracket(lexeme)) {
+        token->type = BRACKET;
+        token->value = strdup(lexeme);
+        token->token_type = "BRACKET";
+    } else if (check_delimiter(lexeme)) {
+        token->type = DELIMITER;
+        token->value = strdup(lexeme);
+        token->token_type = "DELIMITER";
+    } else {
+        free(token);
+        return NULL;
+    }
+
+    // Push the last non-digit character back onto the stream
+    // if (current != EOF) {
+    //     ungetc(current, file);
+    // }
+
+    return token;
+} 
+
 int check_keyword(const char *token) {
     const char *keywords[] = {
         "bounce", "car", "do", "drift", "empty", "ex", "flip", "frozen", "group", "if", "input", "jump",
@@ -248,44 +303,87 @@ void lexer(FILE *file) {
             continue;
         }
 
-        Token token;
-        token.l = line;
-        token.c = column;
+        Token *token = NULL;
+        // token.l = line;
+        // token.c = column;
 
-        if (current_char == ';') {
-            token.type = DELIMITER;
-            token.token_type = "DELIMITER";
-            token.value = strdup(&current_char);
-        } else if (current_char == '(') {
-            token.type = BRACKET;
-            token.token_type = "BRACKET";
-            token.value = strdup(&current_char);
-        } else if (current_char == ')') {
-            token.type = BRACKET;
-            token.token_type = "BRACKET";
-            token.value = strdup(&current_char);
-        } else if (isalpha(current_char) || current_char == '_' || current_char == '#') {
-            Token *test_token = generate_token(current_char, file);
-            token.type = test_token->type;
-            token.token_type = strdup(test_token->token_type);
-            token.value = strdup(test_token->value);
+        token = generate_separator(current_char);
+        if (token != NULL) {
+            token->l = line;
+            token->c = column;
+            tokens[token_count++] = *token;
+            free(token);
+            column++;
+            continue;
+        }
+
+        // if (current_char == ';') {
+        //     token.type = DELIMITER;
+        //     token.token_type = "DELIMITER";
+        //     token.value = strdup(&current_char);
+        // } else if (current_char == '(') {
+        //     token.type = BRACKET;
+        //     token.token_type = "BRACKET";
+        //     token.value = strdup(&current_char);
+        // } else if (current_char == ')') {
+        //     token.type = BRACKET;
+        //     token.token_type = "BRACKET";
+        //     token.value = strdup(&current_char);
+        // } else 
+        if (isalpha(current_char) || current_char == '_' || current_char == '#') {
+            token = generate_token(current_char, file);
+            token->l = line;
+            token->c = column;
+            tokens[token_count++] = *token;
+            free(token);
+            column += strlen(token->value);
+            continue;
+            // token.type = test_token->type;
+            // token.token_type = strdup(test_token->token_type);
+            // token.value = strdup(test_token->value);
             // Token *test_token = generate_token(current_char, file);
             // printf("TEST %s VALUE: %s\n", test_token->token_type, test_token->value);
-            free(test_token->value);
-            free(test_token);
-        } else if (isdigit(current_char)) {
-            Token *test_token = generate_number(current_char, file);
-            token.type = test_token->type;
-            token.token_type = strdup(test_token->token_type);
-            token.value = strdup(test_token->value);
-            // printf("TEST TOKEN VALUE: %s\n", test_token->value);
-            free(test_token->value);
-            free(test_token);
+            // free(test_token->value);
+            // free(test_token);
         } 
-        // printf("%c", current_char);
-        // current_char = fgetc(file);
         
-        tokens[token_count++] = token;
+        if (isdigit(current_char)) {
+            token = generate_number(current_char, file);
+            token->l = line;
+            token->c = column;
+            tokens[token_count++] = *token;
+            free(token);
+            column += strlen(token->value);
+            continue;
+            // Token *test_token = generate_number(current_char, file);
+            // token.type = test_token->type;
+            // token.token_type = strdup(test_token->token_type);
+            // token.value = strdup(test_token->value);
+            // free(test_token->value);
+            // free(test_token);
+        } 
+
+        token = malloc(sizeof(Token));
+        token->type = INVALID;
+        token->token_type = "INVALID";
+        token->value = malloc(2);
+        token->value[0] = current_char;
+        token->value[1] = '\0';
+        token->l = line;
+        token->c = column;
+        tokens[token_count++] = *token;
+        free(token);
+        column++;
+            
+            // token.token_type = "INVALID";
+            // token.type = INVALID;
+            // char *invalid = malloc(2);
+            // invalid[0] = current_char;
+            // token.value = invalid;
+
+            // tokens[token_count++] = token;=
+        
+        // tokens[token_count++] = token;
         column++;
     }
 

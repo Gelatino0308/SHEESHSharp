@@ -1,3 +1,6 @@
 {
-    "C_Cpp.default.compilerPath": "/home/rodevlas/acad-proj-repos/SHEESHSharp/main.c"
+    "C_Cpp.default.compilerPath": "/home/rodevlas/acad-proj-repos/SHEESHSharp/main.c",
+    "files.associations": {
+        "type_traits": "c"
+    }
 }
