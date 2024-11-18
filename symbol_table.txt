@@ -19,4 +19,6 @@ Type: 1, Category: IDENTIFIER, Value: return, Line: 10, Column: 1
 Type: 0, Category: NUM, Value: 1, Line: 11, Column: 1
 Type: 1, Category: IDENTIFIER, Value: invalid, Line: 11, Column: 2
 Type: 1, Category: IDENTIFIER, Value: no_space, Line: 12, Column: 1
-Type: 1, Category: IDENTIFIER, Value: supposed, Line: 12, Column: 10
+Type: 8, Category: DELIMITER, Value: ;, Line: 12, Column: 9
+Type: 1, Category: IDENTIFIER, Value: supposed, Line: 12, Column: 11
+Type: 8, Category: DELIMITER, Value: ,, Line: 12, Column: 19
