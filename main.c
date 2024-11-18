@@ -49,6 +49,33 @@ int is_sc(char current) {
     return !isalnum(current) && !isspace(current);
 }
 
+void handle_slc(FILE *file, int *l, int *c) {
+    char current_char;
+    while ((current_char = fgetc(file)) != EOF && current_char != '\n') {
+        (*c)++;
+    }
+    
+    if (current_char == '\n') {
+        (*l)++;
+        *c = 1;
+    }
+}
+
+void handle_mlc(FILE *file, int *l, int *c) {
+    char current_char;
+    while ((current_char = fgetc(file)) != EOF) {
+        (*c)++;
+        if (current_char == '*' && (current_char = fgetc(file)) == '/') {
+            (*c)++;
+            return;
+        }
+        if (current_char == '\n') {
+            (*l)++;
+            *c = 1;
+        }
+    }
+}
+
 // Function to check if character is a NUM and assigns NUM as the value of the token if yes
 Token *generate_number(char current, FILE *file) { // get number together (not read individually)
     Token *token = malloc(sizeof(Token));
@@ -92,7 +119,7 @@ int check_bracket(const char *token) {
 // Function to check if character is a delimiter
 int check_delimiter(const char *token) {
     const char *delimiters[] = {
-        ";", ","
+        ";", ",", "\""
     };
 
     for (int i = 0; i < (sizeof(delimiters) / sizeof(delimiters[0])); i++) {
@@ -298,6 +325,19 @@ void lexer(FILE *file) {
             continue;
         }
 
+        if (current_char == '/') {
+            current_char = fgetc(file);
+            // Single line comments start with //
+            if (current_char == '/') {
+                handle_slc(file, &line, &column);
+                continue;
+            // Multiline comments start with /*
+            } else if (current_char == '*') {
+                handle_mlc(file, &line, &column);
+                continue;
+            }
+        }
+        
         Token *token = NULL;
 
         token = generate_separator(current_char);
@@ -309,7 +349,7 @@ void lexer(FILE *file) {
             column++;
             continue;
         }
-
+ 
         // Checks if keyword/identifier/num/reserve word
         if (isalnum(current_char) || current_char == '_' || current_char == '#') {
             token = generate_token(current_char, file);
@@ -368,4 +408,3 @@ int main(int argc, char *argv[]) {
     fclose(file);
     return 0;
 }
-
