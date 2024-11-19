@@ -276,15 +276,20 @@ Token *generate_token(char current, FILE *file) {
         }
 
         if (current == '.') {
-            if (has_decimal_point) {
-                // Para di sumobra decimal point
-                // lexeme[lexeme_index - 1];
-                printf("%s", lexeme);
-                break;
-            }
-            has_decimal_point = 1;
-        } else {
-            has_digit = 1;
+            // if (has_decimal_point) {
+            //     // Para di sumobra decimal point
+            //     // lexeme[lexeme_index - 1];
+            //     printf("%s", lexeme);
+            //     break;
+            // }
+            has_decimal_point += 1;
+        } 
+        // else {
+        //     has_digit = 1;
+        // }
+
+        if (isspace(current)) {
+            break;
         }
 
         current = fgetc(file);
@@ -293,14 +298,14 @@ Token *generate_token(char current, FILE *file) {
     lexeme[lexeme_index] = '\0'; // Null terminate the string
 
     // If walang following alphabet or special character 'yung digit, it's simply a NUM.
-    if (has_digit && has_decimal_point && !has_alpha) {
-        token->type = DRIFT;
+    if (has_digit && has_decimal_point == 1 && !has_alpha) {
+        token->type = CONSTANT;
         token->value = strdup(lexeme);
-        token->token_type = "DRIFT";
+        token->token_type = "CONSTANT (DRIFT)";
     } else if (has_digit && !has_alpha && !has_sc) {
-        token->type = NUM;
+        token->type = CONSTANT;
         token->value = strdup(lexeme);
-        token->token_type = "NUM";
+        token->token_type = "CONSTANT (NUM)";
     } else if (check_keyword(lexeme)) {
         token->type = KEYWORD;
         token->value = strdup(lexeme);

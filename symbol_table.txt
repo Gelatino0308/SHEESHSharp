@@ -1,7 +1,7 @@
 Type: 2, Category: KEYWORD, Value: bounce, Line: 1, Column: 1
 Type: 1, Category: IDENTIFIER, Value: love, Line: 1, Column: 8
 Type: 9, Category: BRACKET, Value: (, Line: 1, Column: 13
-Type: 0, Category: NUM, Value: 1, Line: 1, Column: 14
+Type: 4, Category: CONSTANT (NUM), Value: 1, Line: 1, Column: 14
 Type: 9, Category: BRACKET, Value: ), Line: 1, Column: 15
 Type: 8, Category: DELIMITER, Value: ;, Line: 1, Column: 16
 Type: 10, Category: INVALID, Value: 1invalid, Line: 2, Column: 1
@@ -9,7 +9,7 @@ Type: 10, Category: INVALID, Value: 21name, Line: 3, Column: 1
 Type: 10, Category: INVALID, Value: 09identifier, Line: 4, Column: 1
 Type: 10, Category: INVALID, Value: 10haha, Line: 5, Column: 1
 Type: 10, Category: INVALID, Value: 20ayokona, Line: 6, Column: 1
-Type: 0, Category: NUM, Value: 50, Line: 7, Column: 1
+Type: 4, Category: CONSTANT (NUM), Value: 50, Line: 7, Column: 1
 Type: 1, Category: IDENTIFIER, Value: _50, Line: 8, Column: 1
 Type: 10, Category: INVALID, Value: 50_, Line: 9, Column: 1
 Type: 1, Category: IDENTIFIER, Value: checking_hehe, Line: 10, Column: 1
@@ -35,7 +35,11 @@ Type: 1, Category: IDENTIFIER, Value: check, Line: 21, Column: 1
 Type: 10, Category: INVALID, Value: $, Line: 21, Column: 6
 Type: 7, Category: OPERATOR, Value: +, Line: 22, Column: 1
 Type: 7, Category: OPERATOR, Value: -, Line: 23, Column: 1
-Type: 0, Category: NUM, Value: 45, Line: 24, Column: 1
-Type: 11, Category: DRIFT, Value: 1.08., Line: 25, Column: 1
-Type: 10, Category: INVALID, Value: ., Line: 25, Column: 6
-Type: 0, Category: NUM, Value: 1, Line: 25, Column: 7
+Type: 4, Category: CONSTANT (NUM), Value: 45, Line: 24, Column: 1
+Type: 10, Category: INVALID, Value: 1.08.1, Line: 25, Column: 1
+Type: 4, Category: CONSTANT (DRIFT), Value: 10.5, Line: 25, Column: 8
+Type: 4, Category: CONSTANT (DRIFT), Value: 1.00, Line: 26, Column: 1
+Type: 10, Category: INVALID, Value: 2.5A, Line: 27, Column: 1
+Type: 1, Category: IDENTIFIER, Value: saging, Line: 28, Column: 1
+Type: 1, Category: IDENTIFIER, Value: dfjdjf, Line: 29, Column: 1
+Type: 10, Category: INVALID, Value: @, Line: 29, Column: 7
