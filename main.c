@@ -259,7 +259,7 @@ Token *generate_token(char current, FILE *file) {
     int has_sc = 0;
     int has_decimal_point = 0;
 
-    while ((isalnum(current) || current == '_' || current == '#' || current == '.') && current != EOF) {
+    while (!(isspace(current)) && current != EOF) {
         lexeme[lexeme_index] = current;
         lexeme_index++;
 
@@ -288,9 +288,9 @@ Token *generate_token(char current, FILE *file) {
         //     has_digit = 1;
         // }
 
-        if (isspace(current)) {
-            break;
-        }
+        // if (isspace(current)) {
+        //     break;
+        // }
 
         current = fgetc(file);
     }
